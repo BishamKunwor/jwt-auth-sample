@@ -12,7 +12,7 @@ export async function GET(req: Request) {
       { email: response.tokenDetails.email },
       "test",
       {
-        expiresIn: "14m",
+        expiresIn: "30s",
       }
     );
 
