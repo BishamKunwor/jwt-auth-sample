@@ -8,9 +8,11 @@ import {
 } from "react";
 import { axiosPrivate, axiosPublic } from "../axios";
 import { AuthContextProvider } from "./AuthStore";
+import { useRouter } from "next/navigation";
 
 export default function AuthProvider({ children }: PropsWithChildren) {
   const [accessToken, setAccessToken] = useState<string>();
+  const router = useRouter();
 
   useLayoutEffect(() => {
     const reqInterceptor = axiosPrivate.interceptors.request.use(
@@ -35,6 +37,7 @@ export default function AuthProvider({ children }: PropsWithChildren) {
         }
 
         try {
+          router.prefetch("/login");
           const response = await axiosPublic({ url: "/api/refresh-token" });
 
           setAccessToken(response.data.accessToken);
@@ -45,13 +48,14 @@ export default function AuthProvider({ children }: PropsWithChildren) {
           return axiosPrivate(prevConfig);
         } catch (e) {
           setAccessToken(undefined);
+          router.push("/login");
           return Promise.reject(error);
         }
       }
     );
 
     () => axiosPrivate.interceptors.response.eject(resInterceptor);
-  }, [accessToken]);
+  }, [accessToken, router]);
 
   const values = useMemo(() => {
     return { accessToken, setToken: (token: string) => setAccessToken(token) };
