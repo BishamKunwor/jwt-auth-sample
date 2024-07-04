@@ -28,6 +28,8 @@ export async function POST(req: Request) {
 
     users.set(email, { ...user, refreshToken });
 
+    console.log({ ...user, refreshToken })
+
     cookieStore.set("refreshToken", refreshToken, {
       secure: true,
       httpOnly: true,
@@ -39,6 +41,7 @@ export async function POST(req: Request) {
     return Response.json(
       {
         accessToken,
+        message: "Successful login",
       },
       {
         headers: {
